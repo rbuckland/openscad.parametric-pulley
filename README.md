@@ -1,7 +1,7 @@
 # openscad.parametric-pulley
 
 
-This is a generic version of [thingiverse.com/thing:16627](thingiverse.com/thing:16627)
+This is a generic version of [http://thingiverse.com/thing:16627](http://thingiverse.com/thing:16627)
 
 I had a need to produce a timing pulley for a real car timing belt.
 The original author's design was spot on, I just needed to modularise it a bit and do some minor cleanup.
