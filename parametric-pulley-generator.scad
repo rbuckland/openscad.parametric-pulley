@@ -1,5 +1,5 @@
 /**
- * @name Pulley
+ * @name parametric-pulley-generator
  * @category Printed
  * @using 1 x m3 nut, normal or nyloc
  * @using 1 x m3x10 set screw or 1 x m3x8 grub screw
@@ -11,11 +11,24 @@ function tooth_spaceing_curvefit (b,c,d)
 function tooth_spacing(tooth_pitch,pitch_line_offset)
     = (2*((teeth*tooth_pitch)/(3.14159265*2)-pitch_line_offset)) ;
 
-    // Main Module
+// Main Module
+//
 
-module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
+// Some globals
+NEMA17_SHAFT_DIA = 5.2
+M3_DIA           = 3.2
+M3_NUT_HEX       = 1 
+M3_NUT_FLATS     = 5.7
+M3_NUT_DEPTH     = 2.7
+
+module pulley( belt_description, pulley_OD, teeth, tooth_depth, tooth_width, additional_tooth_width )
 {
-    echo (str("Belt type = ",belt_type,"; Number of teeth = ",teeth,"; Pulley Outside Diameter = ",pulley_OD,"mm "));
+    echo (str( "Belt type = ",                belt_description
+              ,"; Pulley Outside Diameter = ",pulley_OD,"mm "
+              ,"; Number of teeth = ",        teeth
+              ,"; Tooth Depth = ",            tooth_depth
+              ,"; Tooth Width = ",            tooth_width
+              ));
     tooth_distance_from_centre = sqrt( pow(pulley_OD/2,2) - pow((tooth_width+additional_tooth_width)/2,2));
     tooth_width_scale = (tooth_width + additional_tooth_width ) / tooth_width;
     tooth_depth_scale = ((tooth_depth + additional_tooth_depth ) / tooth_depth) ;
@@ -78,33 +91,40 @@ module pulley( belt_type , pulley_OD , tooth_depth , tooth_width )
 	translate([0,0,-1])cylinder(r=motor_shaft/2,h=pulley_b_ht + pulley_t_ht + retainer_ht + 2,$fn=motor_shaft*4);
 
 	//captive nut and grub screw holes
+        subtractive_captive_nut_and_grub_screw()
 
-	if ( pulley_b_ht < m3_nut_flats ) { 
+    }
+
+}
+
+// Captive nut and grub screw holes
+module subtractive_captive_nut_and_grub_screw( pulley_b_ht, pulley_b_dia, motor_shaft ) {
+
+
+	if ( pulley_b_ht < M3_NUT_FLATS ) { 
 	    echo ("CAN'T DRAW CAPTIVE NUTS, HEIGHT LESS THAN NUT DIAMETER!!!"); 
 	} else {
-	    if ( (pulley_b_dia - motor_shaft)/2 < m3_nut_depth + 3 ) { 
+	    if ( (pulley_b_dia - motor_shaft)/2 < M3_NUT_DEPTH + 3 ) { 
                 echo ("CAN'T DRAW CAPTIVE NUTS, DIAMETER TOO SMALL FOR NUT DEPTH!!!"); 
             } else {
 		for(j=[1:no_of_nuts]) rotate([0,0,j*nut_angle])
 		    translate([0,0,nut_elevation])rotate([90,0,0]) union() {
 			//entrance
-			translate([0,-pulley_b_ht/4-0.5,motor_shaft/2+m3_nut_depth/2+nut_shaft_distance]) cube([m3_nut_flats,pulley_b_ht/2+1,m3_nut_depth],center=true);
+			translate([0,-pulley_b_ht/4-0.5,motor_shaft/2+M3_NUT_DEPTH/2+nut_shaft_distance]) cube([M3_NUT_FLATS,pulley_b_ht/2+1,M3_NUT_DEPTH],center=true);
 
 			//nut
-			if ( m3_nut_hex > 0 )
+			if ( M3_NUT_HEX > 0 )
 			{
 			    // hex nut
-			    translate([0,0.25,motor_shaft/2+m3_nut_depth/2+nut_shaft_distance]) rotate([0,0,30]) cylinder(r=m3_nut_points/2,h=m3_nut_depth,center=true,$fn=6);
+			    translate([0,0.25,motor_shaft/2+M3_NUT_DEPTH/2+nut_shaft_distance]) rotate([0,0,30]) cylinder(r=m3_nut_points/2,h=M3_NUT_DEPTH,center=true,$fn=6);
 			} else {
 			    // square nut
-			    translate([0,0.25,motor_shaft/2+m3_nut_depth/2+nut_shaft_distance]) cube([m3_nut_flats,m3_nut_flats,m3_nut_depth],center=true);
+			    translate([0,0.25,motor_shaft/2+M3_NUT_DEPTH/2+nut_shaft_distance]) cube([M3_NUT_FLATS,M3_NUT_FLATS,M3_NUT_DEPTH],center=true);
 			}
 
 			//grub screw hole
-			rotate([0,0,22.5])cylinder(r=m3_dia/2,h=pulley_b_dia/2+1,$fn=8);
+			rotate([0,0,22.5])cylinder(r=M3_DIA /2,h=pulley_b_dia/2+1,$fn=8);
 		    }
 	    }
 	}
-    }
-
 }
