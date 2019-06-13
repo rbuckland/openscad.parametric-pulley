@@ -7,6 +7,8 @@ profile = 1;		// 1=MXL 2=40DP 3=XL 4=H 5=T2.5 6=T5 7=T10 8=AT5 9=HTD_3mm 10=HTD_
 
 retainer_ht = 1;	// Belt retainer above teeth : height of retainer flange over pulley, standard = 1.5
 idler_ht = 1;		// Belt retainer below teeth : height of idler flange over pulley, standard = 1.5
+retainer_flat_width = 1.0; // Width of retainer after reaching height above teeth
+idler_flat_width = 1.0; // Width of idler after reaching height above teeth
 
 pulley_t_ht = 12;	// length of toothed part of pulley, standard = 12
 pulley_b_ht = 8;    // pulley base height, standard = 8. Set to 0 idler but no pulley.

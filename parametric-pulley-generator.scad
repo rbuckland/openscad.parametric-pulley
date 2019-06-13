@@ -49,7 +49,7 @@ module pulley(
     //    *** uncomment the following line if pulley is wider than puller base ***
     //    ************************************************************************
 
-    //    translate ([0,0, pulley_b_ht + pulley_t_ht + retainer_ht ]) rotate ([0,180,0])
+    //    translate ([0,0, pulley_b_ht + pulley_t_ht + retainer_ht + retainer_flat_width ]) rotate ([0,180,0])
 
     difference()
     {
@@ -66,7 +66,7 @@ module pulley(
             }
 
             // we need to push the pulley and retainer "up" above the idler (if there is one)
-            translate([0,0,idler_ht]) {
+            translate([0,0,idler_ht + idler_flat_width]) {
                 difference()
                 {
                     //shaft - diameter is outside diameter of pulley
@@ -88,19 +88,31 @@ module pulley(
                 }
 
                 //belt retainer / idler
-                if ( retainer_ht > 0 ) {translate ([0,0, pulley_b_ht + pulley_t_ht ])
+                if ( retainer_ht > 0 || retainer_flat_width > 0) {translate ([0,0, pulley_b_ht + pulley_t_ht ])
                     rotate_extrude($fn=teeth*4)
-                        polygon([[0,0],[pulley_OD/2,0],[pulley_OD/2 + retainer_ht , retainer_ht],[0 , retainer_ht],[0,0]]);}
+                        polygon([
+                           [0,0],
+                           [pulley_OD/2,0],
+                           [pulley_OD/2 + retainer_ht , retainer_ht],
+                           [pulley_OD/2 + retainer_ht , retainer_ht + retainer_flat_width],
+                           [0 , retainer_ht + retainer_flat_width]
+                           ]);}
             }
 
-            if ( idler_ht > 0 ) {translate ([0,0, pulley_b_ht])
+            if ( idler_ht > 0 || idler_flat_width > 0) {translate ([0,0, pulley_b_ht])
                 rotate_extrude($fn=teeth*4)
-                    polygon([[0,0],[pulley_OD/2 + idler_ht,0],[pulley_OD/2 , idler_ht],[0 , idler_ht],[0,0]]);}
+                    polygon([
+                       [0,0],
+                       [pulley_OD/2 + idler_ht,0],
+                       [pulley_OD/2 + idler_ht,idler_flat_width],
+                       [pulley_OD/2 , idler_ht + idler_flat_width],
+                       [0 , idler_ht + idler_flat_width],
+                       ]);}
 
         }
 
         //hole for motor shaft
-        translate([0,0,-1])cylinder(r=motor_shaft/2,h=pulley_b_ht + idler_ht + pulley_t_ht + retainer_ht + 2,$fn=motor_shaft*4);
+        translate([0,0,-1])cylinder(r=motor_shaft/2,h=pulley_b_ht + idler_ht + idler_flat_width + pulley_t_ht + retainer_ht + retainer_flat_width + 2,$fn=motor_shaft*4);
 
         //captive nut and grub screw holes
         subtractive_captive_nut_and_grub_screw(pulley_b_ht, pulley_b_dia, motor_shaft , nut_elevation);
